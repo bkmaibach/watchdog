@@ -1,0 +1,43 @@
+#!/usr/bin/python3
+import json, requests, time
+import RPi.GPIO as GPIO
+import pygame
+
+def trint(m):
+        print(time.ctime())
+        print(m)
+
+address = '0xffd9d51341288bd7e41e689f516eda8ee8c23c08'
+url = 'http://dwarfpool.com/eth/api?wallet=' + address + '&email=bmaibach@gmail.com'
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(12, GPIO.OUT)
+
+debug_mode = true
+m = 5
+trint("Sleeping " + str(m))
+time.sleep(m)
+while(True):
+        resp = requests.get(url=url)
+        data = json.loads(resp.text)
+        error = data['error']
+        workers = data['workers']
+        rig1 = workers['rig1']
+        alive = rig1['alive']
+        hashrate = rig1['hashrate']
+        second_since_submit = rig1['second_since_submit']
+        if alive == False:
+                s = 10
+                if debug_mode == False:
+                        GPIO.output(12, True)
+                        time.sleep(.5)
+                        GPIO.output(12, False)
+                        time.sleep(s)
+                        alive = True
+		else:
+				
+        else:
+                time.sleep(600)
+        print("\n")
+GPIO.cleanup()
